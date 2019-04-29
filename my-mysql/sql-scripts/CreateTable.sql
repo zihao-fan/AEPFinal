@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS tasks (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    task VARCHAR(255) NOT NULL,
+    is_completed BOOLEAN,
+    notify VARCHAR(255)
+);
