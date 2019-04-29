@@ -77,6 +77,14 @@ class FlaskrTestCase(unittest.TestCase):
         tasks = response.json()['tasks']
         assert len(tasks) == 2
 
+    def test_9_edit(self):
+        data = {"title": "Test Task 2", "is_completed": "true"}
+        headers = {"Content-Type": "application/json"}
+        url = 'http://127.0.0.1:5000/v1/tasks/2'
+
+        response = requests.put(url, json=data, headers=headers)
+        assert response.status_code == 204
+
     @classmethod
     def tearDownClass(cls):
         pass
