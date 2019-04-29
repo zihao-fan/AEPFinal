@@ -5,20 +5,23 @@ import time
 
 class FlaskrTestCase(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         time.sleep(2)
+        url = 'http://127.0.0.1:5000/v1/tasks/remove'
+        response = requests.get(url)
 
-    def test_connect_db(self):
+    def test_0_connect_db(self):
         url = 'http://127.0.0.1:5000/v1/tasks'
         response = requests.get(url)
         assert response.status_code == 200
 
-    def test_remove_all(self):
+    def test_1_remove_all(self):
         url = 'http://127.0.0.1:5000/v1/tasks/remove'
         response = requests.get(url)
         assert response.status_code == 200
 
-    def test_insert_in_db(self):
+    def test_2_insert_in_db(self):
         headers = {"Content-Type": "application/json"}
         url = 'http://127.0.0.1:5000/v1/tasks'
 
@@ -32,7 +35,7 @@ class FlaskrTestCase(unittest.TestCase):
         tasks = response.json()['tasks']
         assert response.status_code==200
 
-    def test_bulk_insert(self):
+    def test_3_bulk_insert(self):
         headers = {"Content-Type": "application/json"}
         url = 'http://127.0.0.1:5000/v1/tasks'
         data = {"tasks": [{"title": "Test Task 3", "is_completed": "true"}, 
@@ -42,10 +45,16 @@ class FlaskrTestCase(unittest.TestCase):
         tasks = response.json()['tasks']
         assert response.status_code==200
 
-
-    def tearDown(self):
-        url = 'http://127.0.0.1:5000/v1/tasks/remove'
+    def test_4_getting_a_task(self):
+        url = 'http://127.0.0.1:5000/v1/tasks/1'
         response = requests.get(url)
+        tasks = response.json()
+        print(tasks)
+        assert tasks['id'] == 1
+
+    @classmethod
+    def tearDownClass(cls):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

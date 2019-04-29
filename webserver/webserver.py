@@ -113,7 +113,8 @@ def get_task(id):
     sql_query = "SELECT * FROM tasks WHERE tasks.id = {}".format(id)
     tasks = read_database(sql_query)
     if len(tasks):
-        resp = Response(json.dumps(convert_to_dict(tasks[0])), status=200)
+        print(tasks[0])
+        resp = Response(json.dumps(convert_to_dict(*tasks[0])), status=200)
     else:
         resp = Response(json.dumps({'error': "There is no task at that id"}), status=404)
     return resp
