@@ -84,7 +84,7 @@ def add_task():
                 id = get_id()
                 # new_task = Task(title, is_completed, id)
                 # task_data[id] = new_task
-                sql_query = "INSERT INTO tasks (id, task, is_completed, notify) VALUES ({}, '{}', {}, ’{}‘)".format(id, title, is_completed, MY_EMAIL)
+                sql_query = "INSERT INTO tasks (id, task, is_completed, notify) VALUES ({}, '{}', {}, '{}')".format(id, title, is_completed, MY_EMAIL)
                 update_database(sql_query)
                 return_data['tasks'].append({'id': id})
             resp = Response(json.dumps(return_data), mimetype='application/json', status=201)

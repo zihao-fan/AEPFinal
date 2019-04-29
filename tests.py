@@ -30,7 +30,18 @@ class FlaskrTestCase(unittest.TestCase):
 
         response = requests.get(url)
         tasks = response.json()['tasks']
-        assert len(tasks) == 2
+        assert response.status_code==200
+
+    def test_bulk_insert(self):
+        headers = {"Content-Type": "application/json"}
+        url = 'http://127.0.0.1:5000/v1/tasks'
+        data = {"tasks": [{"title": "Test Task 3", "is_completed": "true"}, 
+            {"title": "Test Task 4", "is_completed": "false"}]}
+        response = requests.post(url, json=data, headers=headers)
+        response = requests.get(url)
+        tasks = response.json()['tasks']
+        assert response.status_code==200
+
 
     def tearDown(self):
         url = 'http://127.0.0.1:5000/v1/tasks/remove'
