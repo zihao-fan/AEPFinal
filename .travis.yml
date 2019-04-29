@@ -16,8 +16,8 @@ before_install:
 # install: 
 #   - pip install -r webserver/requirements.txt
 
-# before_script:
-#   - sleep 15
+before_script:
+  - sleep 15
 
 script:
   # - export FLASK_APP=webserver.py 
