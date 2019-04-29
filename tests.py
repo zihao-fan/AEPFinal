@@ -49,8 +49,13 @@ class FlaskrTestCase(unittest.TestCase):
         url = 'http://127.0.0.1:5000/v1/tasks/1'
         response = requests.get(url)
         tasks = response.json()
-        print(tasks)
         assert tasks['id'] == 1
+
+    def test_5_getting_a_invalid_task(self):
+        url = 'http://127.0.0.1:5000/v1/tasks/17'
+        response = requests.get(url)
+        error = response.json()
+        assert "error" in error
 
     @classmethod
     def tearDownClass(cls):
