@@ -57,6 +57,16 @@ class FlaskrTestCase(unittest.TestCase):
         error = response.json()
         assert "error" in error
 
+    def test_6_delete_existing_task(self):
+        url = 'http://127.0.0.1:5000/v1/tasks/1'
+        response = requests.delete(url)
+        assert response.status_code == 204
+
+    # def test_7_delete_nonexsiting_task(self):
+    #     url = 'http://127.0.0.1:5000/v1/tasks/17'
+    #     response = requests.delete(url)
+    #     assert response.status_code == 204
+
     @classmethod
     def tearDownClass(cls):
         pass
