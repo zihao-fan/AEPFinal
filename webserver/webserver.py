@@ -5,8 +5,10 @@ import mysql.connector
 db = mysql.connector.connect(user='root', 
                 password='my-secret-pw', 
                 host='127.0.0.1',
+                # host='my-mysql',
                 database='demo',
                 port=3309,
+                # port=3306,
                 auth_plugin='mysql_native_password')
 app = Flask(__name__, static_url_path="/static")
 
