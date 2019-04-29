@@ -1,11 +1,15 @@
 from flask import Flask, request, Response
 import json
 import pymysql
+import requests
+
+MAILGUN_DOMAIN_NAME="sandboxa18ee74168f74ceb89587ebb1eaec5df.mailgun.org"
+MAILGUN_API_KEY="key-42c26d4ddcb7ca7e238d7740de89ef35"
+MY_EMAIL = 'fanzihao.thu@gmail.com'
 
 db = pymysql.connect(user='root', 
                 password='my-secret-pw', 
                 host='127.0.0.1',
-                # host='my-mysql',
                 database='demo',
                 port=3309)
 app = Flask(__name__, static_url_path="/static")
@@ -44,13 +48,31 @@ def get_id():
     sql_query = 'SELECT id FROM tasks'
     ids = read_database(sql_query)
     ids = [item[0] for item in ids]
-    return max(ids) + 1
+    if len(ids):
+        return max(ids) + 1
+    else:
+        return 1
 
 def convert_to_dict(id, title, is_completed, email):
     return {'id': id, 'title': title, 'is_completed': is_completed, 'email': email}
-        
+
+def send_email(id, title, receiver):
+    url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
+    auth = ('api', MAILGUN_API_KEY)
+    data = {
+        'from': 'Me <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
+        'to': receiver,
+        'subject': "Task {} completed".format(id),
+        'text': "Your Task #{} {} has been completed".format(id, title),
+    }
+
+    response = requests.post(url, auth=auth, data=data)
+    print(response.status_code)
+
 @app.route('/v1/tasks', methods=['POST'])
 def add_task():
+    # print('request.headers', request.headers)
+    print('request.get_json', request.get_json())
     if request.headers['Content-Type'] == 'application/json':
         arguments = request.get_json()
         if 'tasks' in arguments:
@@ -62,7 +84,7 @@ def add_task():
                 id = get_id()
                 # new_task = Task(title, is_completed, id)
                 # task_data[id] = new_task
-                sql_query = "INSERT INTO tasks (id, task, is_completed) VALUES ({}, '{}', {})".format(id, title, is_completed)
+                sql_query = "INSERT INTO tasks (id, task, is_completed, notify) VALUES ({}, '{}', {}, ’{}‘)".format(id, title, is_completed, MY_EMAIL)
                 update_database(sql_query)
                 return_data['tasks'].append({'id': id})
             resp = Response(json.dumps(return_data), mimetype='application/json', status=201)
@@ -72,7 +94,7 @@ def add_task():
             id = get_id()
             # new_task = Task(title, is_completed, id)
             # task_data[id] = new_task
-            sql_query = "INSERT INTO tasks (id, task, is_completed) VALUES ({}, '{}', {})".format(id, title, is_completed)
+            sql_query = "INSERT INTO tasks (id, task, is_completed, notify) VALUES ({}, '{}', {}, '{}')".format(id, title, is_completed, MY_EMAIL)
             update_database(sql_query)
             resp = Response(json.dumps({'id': id}), mimetype='application/json', status=201)
         return resp
@@ -127,11 +149,20 @@ def edit_task(id):
         arguments = request.get_json()
         title = arguments.get('title')
         is_completed = arguments.get('is_completed')
+        if is_completed:
+            send_email(id, title, MY_EMAIL)
         sql = "UPDATE tasks SET title = '{}', is_completed = '{}' WHERE id = {}".format(title, is_completed, id)
         resp = Response(status=204)
     else:
         resp = Response(json.dumps({'error': "There is no task at that id"}), status=404)
     return resp
+
+@app.route('/v1/tasks/remove', methods=['GET'])
+def remove_all_rows():
+    sql_query = 'DELETE FROM tasks'
+    update_database(sql_query)
+    resp = Response(status=200)
+    return resp 
 
 @app.after_request
 def after_request(response):
