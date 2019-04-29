@@ -62,10 +62,20 @@ class FlaskrTestCase(unittest.TestCase):
         response = requests.delete(url)
         assert response.status_code == 204
 
-    # def test_7_delete_nonexsiting_task(self):
-    #     url = 'http://127.0.0.1:5000/v1/tasks/17'
-    #     response = requests.delete(url)
-    #     assert response.status_code == 204
+    def test_7_delete_nonexsiting_task(self):
+        url = 'http://127.0.0.1:5000/v1/tasks/17'
+        response = requests.delete(url)
+        assert response.status_code == 204
+
+    # def test_8_bulk_delete(self):
+    #     url = 'http://127.0.0.1:5000/v1/tasks'
+    #     data = {"tasks": [{"id": "0"}, {"id": "3"}]}
+    #     headers = {"Content-Type": "application/json"}
+    #     response = requests.delete(url, json=data, headers=headers)
+
+    #     response = requests.get(url)
+    #     tasks = response.json()['tasks']
+    #     assert len(tasks) == 2
 
     @classmethod
     def tearDownClass(cls):
